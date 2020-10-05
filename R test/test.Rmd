@@ -1,0 +1,31 @@
+---
+title: "BIO 299 project malformed pollen grains"
+author: "Vebjørn Kveberg Opsanger"
+bibliography: "PaleoChem BIO299.bib"
+csl: "harvard-cite-them-right.csl"
+date: "15 9 2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Title
+
+## Introduction
+
+
+## Materials and methods
+Six branches of *Pinus sylvestris* with pollen cones at ... stage were harvested from nine different trees at the end of may and start of june. Each branch was put into their own bottles of water and were sorted into six different frames so that each tree had one branch in each frame. The frames were placed into a greenhouse which held .... degrees celsius. Three of the frames were placed under fluorescent lights with UV-B irradiance of ... while the other three frames were placed under fluorescenrt lights that mimicked the mean UV-B irradiance where the cut trees grew. Pollen grains were harvested from the pollen cones after ... months and stored in a freezer which held ... degrees celsius.
+
+To prepare a sample for microscopy pollen was put into a eppendorf vial and the eppendorf vial was then filled with destilled water. The sample was then sentrifuged so that some of the pollen sank to the bottom. In a fume hood a bit of glyseringelatin(with fenol) was placed on an object glass and melted at 85 degrees celsius. When the glyceringelatin had melted some of the pollen in the eppendorf vial was extracted with a single use pippete and one drop was dripped onto the melted glyceringelatin. The glycerinegelatin and pollen drop were then mixed before being taken off the oven and left to harden. When the mixture had hardened, a piece of it was scraped off and put onto a different object glass and four pieces of wax were placed in a square around the scraped off piece. A coverslip was then put on top of the wax and the scraped off piece. The object glass was then placed on the oven at 85 degrees celsius and left there until the wax and scraped of piece of the mixture was melted. Lastly, the object glass was removed from the oven and left out in the open until the contents under the coverslip had hardened.
+
+The prepared samples were looked at under a microscope (insert model here) using phase contrast 3 and at 40x magnification. 600 pollen grains were counted per sample and the number of tetrads and malformations were noted. The counting was done by going from left to right in a straight line at a fixed vertical value. When the rightmost edge of the sample at that vertical value was reached, the vertical value was moved upwards two screens degrees and the process repeated. When reaching the rightmost edge again the vertical value was moved downwards two degrees from the original vertical positional value. If the count 600 pollen grains was not reached, the pattern of moving the microscope was repeated going two screens upwards from the upper vertical value already looked at and then two screens downwards from the lowest vertical value already looked at. 
+
+## Results
+
+## Discussion
+
+## References
+

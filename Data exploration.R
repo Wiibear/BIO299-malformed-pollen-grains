@@ -8,14 +8,22 @@ Pollen_data <- df %>%
     Tree = substring(Sample, 0, 3),   # Create column for tree number
     Frame = substring(Sample, 5, 5),   # Create column for frame number
     Treatment_full = substring(Sample, 7, 8), # Create column for treatment type with number
-    Treatment = substring(Sample, 7, 7) # Create column for treatment type 
+    Treatment = substring(Sample, 7, 7), # Create column for treatment type 
+    Malformation_rate = Num_malform/600,
+    Mean_tetrad_rate = Tetrad/600,
+    
   )
+
+
+
 
 c_tetrad <- Pollen_data %>% #Data from control
   filter(Treatment == 'C')
 
 t_data <- Pollen_data %>% #Data from UV-B treatment        
   filter(Treatment == 'T') 
+
+
 
 # Scatterplots
 

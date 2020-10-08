@@ -18,13 +18,13 @@ t_data <- Pollen_data %>% #Data from UV-B treatment
   filter(Treatment == 'T')
 
 
-linear_mod <-lm(Tetrad ~ Num_malform, Pollen_data)
+linear_mod <-glm(Num_malform ~ Tetrad, Pollen_data, family = gaussian)
 summary(linear_mod)
 
-linear_mod_t <-lm(Num_malform ~ Tetrad, t_data)
+linear_mod_t <-glm(Num_malform ~ Tetrad, t_data, family = gaussian)
 summary(linear_mod_t)
 
-linear_mod_c <- lm(Num_malform ~ Tetrad, c_data)
+linear_mod_c <- glm(Num_malform ~ Tetrad, c_data, family = gaussian)
 summary(linear_mod_c)
 
 view(t_data)

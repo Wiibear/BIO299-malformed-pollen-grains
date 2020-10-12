@@ -22,11 +22,12 @@ t_data <- Pollen_data %>% #Data from UV-B treatment
   filter(Treatment == 'T') 
 
 wo_outlier <- Pollen_data %>%
-  filter(Num_malform < 50 & Tetrad < 60) #Removing the largest outliers
-view(wo_outlier)
+  filter(Num_malform < 50 & Tetrad < 60)#Removing the largest outliers
 
-
-
+c_no_out <- wo_outlier%>% #Data from control without the two big outliers
+  filter(Treatment == 'C')
+  
+view(x)
 ###
 #Checking if normally distributed
 
@@ -36,11 +37,20 @@ qqline(t_data$Tetrad)
 qqnorm(c_data$Tetrad)
 qqline(c_data$Tetrad)
 
+qqnorm(c_no_out$Tetrad)
+qqline(c_no_out$Tetrad)
+
+qqnorm(c_no_out$Num_malform)
+qqline(c_no_out$Num_malform)
+
 qqnorm(t_data$Num_malform)
 qqline(t_data$Num_malform)
 
 qqnorm(c_data$Num_malform)
 qqline(c_data$Num_malform)
+
+qqnorm(x$Num_malform)
+qqline(x$Num_malform)
 
 ### 
 #Scatterplots
@@ -87,13 +97,20 @@ cor.test(Pollen_data$Num_malform, Pollen_data$Tetrad, #All data
            alternative = "greater", 
            method = "kendall")
 
-cor.test(t_data$Num_malform, t_data$Tetrad, #Only control data
+cor.test(t_data$Num_malform, t_data$Tetrad, #Only treatment data
          alternative = "greater",
-         method = "kendall")
+         method = "pearson")
 
-cor.test(c_data$Num_malform, c_data$Tetrad, # Only treatment data
+cor.test(c_data$Num_malform, c_data$Tetrad, # Only control data
          alternative = "greater", 
-         method = "kendall")
+         method = "pearson")
 
+cor.test(c_no_out$Num_malform, c_no_out$Tetrad, # Only control data but without 2 big outliers
+         alternative = "greater", 
+         method = "pearson")
+
+cor.test(wo_outlier$Num_malform, wo_outlier$Tetrad, #Without the two big outliers
+         alternative = "greater", 
+         method = "pearson")
 
 

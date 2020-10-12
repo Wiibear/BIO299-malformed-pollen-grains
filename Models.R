@@ -23,18 +23,24 @@ t_data <- Pollen_data %>% #Data from UV-B treatment
 wo_outlier <- Pollen_data %>%   #Removing the most egregious outliers
   filter(Num_malform < 50 & Tetrad < 60)
 
+c_no_out <- wo_outlier%>% #Data from control without the two big outliers
+  filter(Treatment == 'C')
 
-# glm models
-linear_mod_og <-glm(Num_malform ~ Tetrad, Pollen_data, family = gaussian) # glm of original data
+# linear models
+linear_mod_og <-lm(Num_malform ~ Tetrad, Pollen_data) # lm of original data
 summary(linear_mod)
 
-linear_mod_t <-glm(Num_malform ~ Tetrad, t_data, family = gaussian) # glm of only the UV-B treatment
+linear_mod_t <-lm(Num_malform ~ Tetrad, t_data) # lm of only the UV-B treatment
 summary(linear_mod_t)
 
-linear_mod_c <- glm(Num_malform ~ Tetrad, c_data, family = gaussian) # glm of only the control treatment
+linear_mod_c <- lm(Num_malform ~ Tetrad, c_data) # lm of only the control treatment
 summary(linear_mod_c)
 
-linear_mod <-glm(Num_malform ~ Tetrad, wo_outlier, family = gaussian) # glm with the most egregious outliers removed
+lin_c_no_out <- lm(Num_malform ~ Tetrad, c_no_out) # lm of only the control treatment
+summary(linear_mod_c)
+
+linear_mod <-lm(Num_malform ~ Tetrad, wo_outlier) # lm with the most egregious outliers removed
 summary(linear_mod)
+
 
 

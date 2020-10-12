@@ -22,7 +22,7 @@ t_data <- Pollen_data %>% #Data from UV-B treatment
   filter(Treatment == 'T') 
 
 wo_outlier <- Pollen_data %>%
-  filter(Num_malform < 50 & Tetrad < 60)#Removing the largest outliers
+  filter(Num_malform < 90)#Removing the largest outliers
 
 c_no_out <- wo_outlier %>% #Data from control without the two big outliers
   filter(Treatment == 'C')
@@ -109,23 +109,18 @@ ggplot(Pollen_data, aes(Treatment, Malformation_rate, group = Treatment)) + #Vis
 # Correlation tests
   
 cor.test(Pollen_data$Num_malform, Pollen_data$Tetrad, #All data
-           alternative = "greater", 
            method = "pearson")
 
 cor.test(t_data$Num_malform, t_data$Tetrad, #Only treatment data
-         alternative = "greater",
          method = "pearson")
 
 cor.test(wo_outlier$Num_malform, wo_outlier$Tetrad, #Without the two big outliers
-         alternative = "greater", 
          method = "pearson")
 
 cor.test(c_data$Num_malform, c_data$Tetrad, # Only control data
-         alternative = "greater", 
          method = "pearson")
 
 cor.test(c_no_out$Num_malform, c_no_out$Tetrad, # Only control data but without 2 big outliers
-         alternative = "greater", 
          method = "pearson")
 
 ###

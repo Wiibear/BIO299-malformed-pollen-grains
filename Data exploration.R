@@ -128,3 +128,8 @@ cor.test(c_no_out$Num_malform, c_no_out$Tetrad, # Only control data but without 
          alternative = "greater", 
          method = "pearson")
 
+###
+#t-test
+t.test(c_data$Num_malform, t_data$Num_malform, alternative = "less")    #two sample t-test with all the data
+t.test(c_no_out$Num_malform, t_data$Num_malform, alternative = "less")  #two sample t-test with the two biggest outliers removed
+

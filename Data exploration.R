@@ -24,10 +24,23 @@ t_data <- Pollen_data %>% #Data from UV-B treatment
 wo_outlier <- Pollen_data %>%
   filter(Num_malform < 50 & Tetrad < 60)#Removing the largest outliers
 
-c_no_out <- wo_outlier%>% #Data from control without the two big outliers
+c_no_out <- wo_outlier %>% #Data from control without the two big outliers
   filter(Treatment == 'C')
+
+###
+#Means and medians
   
-view(x)
+median(t_data$Malformation_rate)  
+median(c_data$Malformation_rate)      #None of the medians are above 3% malformation rates,
+median(Pollen_data$Malformation_rate) #but the UV-B treated data's malformation rate median is
+                                      #almost double that of the control
+mean(t_data$Malformation_rate)
+mean(c_data$Malformation_rate)
+mean(c_no_out$Malformation_rate)         #Means seem to be heavily influenced by the two biggest outliers,
+mean(Pollen_data$Malformation_rate)      #but without those the mean malformation rate of the UV-B treatment is the greatest
+mean(wo_outlier$Malformation_rate)
+
+
 ###
 #Checking if normally distributed
 
@@ -75,8 +88,7 @@ ggplot(Pollen_data, aes(Num_malform, Tetrad)) +
 #Boxplots
 
 ggplot(Pollen_data ,aes(Treatment, Tetrad, group = Treatment)) +#Comparison of tetrads
-  geom_boxplot() +
-  stat_compare_means()
+  geom_boxplot() 
 
 ggplot(Pollen_data ,aes(Treatment, Num_malform, group = Treatment)) +  #Comparison of malformations
   geom_boxplot() +
@@ -89,16 +101,23 @@ ggplot(Pollen_data ,aes(Frame, Tetrad, group = Frame)) + # Comparison of frames 
 
 ggplot(Pollen_data, aes(Treatment, Tet_to_malf_rate, group = Treatment)) + #Comparison of the rate of tetrads to malformations
   geom_boxplot()
+
+ggplot(Pollen_data, aes(Treatment, Malformation_rate, group = Treatment)) + #Visualisation of malformation rate
+  geom_boxplot()
  
 ###
 # Correlation tests
   
 cor.test(Pollen_data$Num_malform, Pollen_data$Tetrad, #All data
            alternative = "greater", 
-           method = "kendall")
+           method = "pearson")
 
 cor.test(t_data$Num_malform, t_data$Tetrad, #Only treatment data
          alternative = "greater",
+         method = "pearson")
+
+cor.test(wo_outlier$Num_malform, wo_outlier$Tetrad, #Without the two big outliers
+         alternative = "greater", 
          method = "pearson")
 
 cor.test(c_data$Num_malform, c_data$Tetrad, # Only control data
@@ -108,9 +127,4 @@ cor.test(c_data$Num_malform, c_data$Tetrad, # Only control data
 cor.test(c_no_out$Num_malform, c_no_out$Tetrad, # Only control data but without 2 big outliers
          alternative = "greater", 
          method = "pearson")
-
-cor.test(wo_outlier$Num_malform, wo_outlier$Tetrad, #Without the two big outliers
-         alternative = "greater", 
-         method = "pearson")
-
 

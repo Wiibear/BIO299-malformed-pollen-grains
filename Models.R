@@ -1,49 +1,49 @@
 library(tidyverse)
 library(readxl)
-
+library(nlme)
 df <- read_excel("data/Pollen data.xlsx")
 
-#Data wrangling
-
 Pollen_data <- df %>%
+  filter(Num_malform < 90)
+
+Pollen_data <- dfNoOut %>%
   mutate(
     Tree = substring(Sample, 0, 3),   # Create column for tree number
     Frame = substring(Sample, 5, 5),   # Create column for frame number
-    Treatment_full = substring(Sample, 7, 8), # Create column for treatment type with number
-    Treatment = substring(Sample, 7, 7), # Create column for treatment type 
+    code = substring(Sample, 7, 8),
+    Malformation_rate = (Num_malform/600),
+  ) %>%
+  filter(code == "C4" | code == "T2") %>%
+  rename(
+    treatment = code      #Didn't manage to make column with treatment as UV or C
+                          #I tried this ---> treatment = if(Frame == "1"|Frame == "3"|Frame == "5") {"C"} else {"UV"}
   )
 
+model1<-lme(Malformation_rate ~ treatment,
+            random = ~1 |Tree, data = Pollen_data)
+summary(model1)
 
-c_data <- Pollen_data %>% #Data from control
-  filter(Treatment == 'C')
+residuals = resid(model1)
+qqnorm(residuals)              #Checking normal distribution of residuals
+qqline(residuals)
 
-t_data <- Pollen_data %>% #Data from UV-B treatment        
-  filter(Treatment == 'T')
+###
+#Experimentation
+meanMalfFrame <- Pollen_data %>%
+  group_by(Frame, treatment) %>%
+  summarize(meanMalform = mean(Num_malform))%>%
+  mutate(
+    treatment = if(Frame == "1"|Frame == "3"|Frame == "5") {"C"} else {"UV"}
+  )
+view(meanMalfFrame)
 
-wo_outlier <- Pollen_data %>%   #Removing the most egregious outliers
-  filter(Num_malform < 90)
+meanMalfTree <- Pollen_data %>%
+  group_by(Tree, Frame, code) %>%
+  summarize(treeMeanMalf = mean(Num_malform)) %>%
+  mutate(
+    treatment = if(Frame == "1"|Frame == "3"|Frame == "5") {"C"} else {"UV"}
+  )
+view(meanMalfTree)
 
-c_no_out <- wo_outlier %>% #Data from control without the two big outliers
-  filter(Treatment == 'C')
-
-c_no_out2 <- wo_outlier%>% #Data from control without the 3 biggest outliers
-  filter(Treatment == 'C' & Num_malform < 30)
-
-# linear models
-linear_mod_og <-lm(Num_malform ~ Tetrad, Pollen_data) # lm of original data
-summary(linear_mod_og)
-
-linear_mod_t <-lm(Num_malform ~ Tetrad, t_data) # lm of only the UV-B treatment
-summary(linear_mod_t)
-
-linear_mod_c <- lm(Num_malform ~ Tetrad, c_data) # lm of only the control treatment
-summary(linear_mod_c)
-
-lin_c_no_out <- lm(Num_malform ~ Tetrad, c_no_out) # lm of only the control treatment
-summary(lin_c_no_out)
-
-linear_mod <-lm(Num_malform ~ Tetrad, wo_outlier) # lm with the most egregious outliers removed
-summary(linear_mod)
-
-
-
+m1Tree<-lme(treeMeanMalf ~ Frame,random = ~1 |Tree, data = meanMalfTree)
+summary(m1Tree)

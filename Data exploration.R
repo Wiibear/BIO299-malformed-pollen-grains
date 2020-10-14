@@ -1,44 +1,41 @@
 library(tidyverse)
 library(readxl)
+library(nlme)
 
 df <- read_excel("data/Pollen data.xlsx")
 
-Pollen_data <- df %>%
+dfNoOut <- filter(df, Num_malform < 90 & Tetrad < 60)
+
+Pollen_data <- dfNoOut %>%
   mutate(
     Tree = substring(Sample, 0, 3),   # Create column for tree number
     Frame = substring(Sample, 5, 5),   # Create column for frame number
-    Treatment_full = substring(Sample, 7, 8), # Create column for treatment type with number
-    Treatment = substring(Sample, 7, 7), # Create column for treatment type 
-    Malformation_rate = (Num_malform/600),
-    Tetrad_rate = Tetrad/600,
-    Tet_to_malf_rate = Tetrad/Num_malform
-  )
+    code = substring(Sample, 7, 8),
+    Malformation_rate = (Num_malform/600)) %>%
+  filter(code == "C4" | code == "T2") %>%
+  mutate(
+    treatment = code)
+  
 
 
-c_tetrad <- Pollen_data %>% #Data from control
-  filter(Treatment == 'C')
+c_data <- Pollen_data %>% #Data from control
+  filter(code == 'C4') 
 
-t_data <- Pollen_data %>% #Data from UV-B treatment        
-  filter(Treatment == 'T') 
+t_data <- Pollen_data %>% #Data from UV-B code        
+  filter(code == 'T2') 
 
-wo_outlier <- Pollen_data %>%
-  filter(Num_malform < 90)#Removing the largest outliers
-
-c_no_out <- wo_outlier %>% #Data from control without the two big outliers
-  filter(Treatment == 'C')
 
 ###
 #Means and medians
   
 median(t_data$Malformation_rate)  
-median(c_data$Malformation_rate)      #None of the medians are above 3% malformation rates,
-median(Pollen_data$Malformation_rate) #but the UV-B treated data's malformation rate median is
-                                      #almost double that of the control
+median(c_data$Malformation_rate)      
+median(Pollen_data$Malformation_rate) 
+                                      
 mean(t_data$Malformation_rate)
 mean(c_data$Malformation_rate)
-mean(c_no_out$Malformation_rate)         #Means seem to be heavily influenced by the two biggest outliers,
-mean(Pollen_data$Malformation_rate)      #but without those the mean malformation rate of the UV-B treatment is the greatest
-mean(wo_outlier$Malformation_rate)
+mean(c_no_out$Malformation_rate)         
+mean(Pollen_data$Malformation_rate) 
 
 
 ###
@@ -51,6 +48,8 @@ qqnorm(c_data$Tetrad)
 qqline(c_data$Tetrad)
 
 qqnorm(c_no_out$Tetrad)
+
+
 qqline(c_no_out$Tetrad)
 
 qqnorm(c_no_out$Num_malform)
@@ -62,20 +61,18 @@ qqline(t_data$Num_malform)
 qqnorm(c_data$Num_malform)
 qqline(c_data$Num_malform)
 
-qqnorm(x$Num_malform)
-qqline(x$Num_malform)
 
 ### 
 #Scatterplots
 
-ggplot(Pollen_data, aes(Tetrad, Num_malform,)) +   #Both control and UV-B treatment in one
-  geom_point(aes(shape = Treatment)) +
+ggplot(Pollen_data, aes(Tetrad, Num_malform,)) +   #Both control and UV-B code in one
+  geom_point(aes(shape = code)) +
   geom_abline() 
 
-ggplot(Pollen_data, aes(Tetrad, Num_malform,)) +   #Facet wrap of control and UV-B treatment
-  geom_point(aes(shape = Treatment)) +
+ggplot(Pollen_data, aes(Tetrad, Num_malform,)) +   #Facet wrap of control and UV-B code
+  geom_point(aes(shape = code)) +
   geom_abline() +
-  facet_wrap(~ Treatment, nrow=1)
+  facet_wrap(~ code, nrow=1)
 
 ggplot(Pollen_data, aes(Num_malform, Tetrad)) +
   geom_point() +
@@ -87,11 +84,11 @@ ggplot(Pollen_data, aes(Num_malform, Tetrad)) +
 ###
 #Boxplots
 
-ggplot(Pollen_data ,aes(Treatment, Tetrad, group = Treatment)) +#Comparison of tetrads
+ggplot(Pollen_data ,aes(code, Tetrad, group = code)) +#Comparison of tetrads
   geom_boxplot() 
 
-ggplot(Pollen_data ,aes(Treatment, Num_malform, group = Treatment)) +  #Comparison of malformations
-  geom_boxplot() +
+ggplot(Pollen_data ,aes(code, Num_malform, group = code)) +  #Comparison of malformations
+  geom_boxplot()
 
 ggplot(Pollen_data ,aes(Frame, Num_malform, group = Frame)) + # Comparison between frames with regards to number of malformations
   geom_boxplot() 
@@ -99,10 +96,7 @@ ggplot(Pollen_data ,aes(Frame, Num_malform, group = Frame)) + # Comparison betwe
 ggplot(Pollen_data ,aes(Frame, Tetrad, group = Frame)) + # Comparison of frames in regards to tetrads
   geom_boxplot() 
 
-ggplot(Pollen_data, aes(Treatment, Tet_to_malf_rate, group = Treatment)) + #Comparison of the rate of tetrads to malformations
-  geom_boxplot()
-
-ggplot(Pollen_data, aes(Treatment, Malformation_rate, group = Treatment)) + #Visualisation of malformation rate
+ggplot(Pollen_data, aes(code, Malformation_rate, group = code)) + #Visualisation of malformation rate
   geom_boxplot()
  
 ###
@@ -111,20 +105,15 @@ ggplot(Pollen_data, aes(Treatment, Malformation_rate, group = Treatment)) + #Vis
 cor.test(Pollen_data$Num_malform, Pollen_data$Tetrad, #All data
            method = "pearson")
 
-cor.test(t_data$Num_malform, t_data$Tetrad, #Only treatment data
-         method = "pearson")
-
-cor.test(wo_outlier$Num_malform, wo_outlier$Tetrad, #Without the two big outliers
+cor.test(t_data$Num_malform, t_data$Tetrad, #Only code data
          method = "pearson")
 
 cor.test(c_data$Num_malform, c_data$Tetrad, # Only control data
          method = "pearson")
 
-cor.test(c_no_out$Num_malform, c_no_out$Tetrad, # Only control data but without 2 big outliers
-         method = "pearson")
-
 ###
 #t-test
 t.test(c_data$Num_malform, t_data$Num_malform, alternative = "less")    #two sample t-test with all the data
-t.test(c_no_out$Num_malform, t_data$Num_malform, alternative = "less")  #two sample t-test with the two biggest outliers removed
 
+linMod <- lm(Num_malform ~ Tetrad, data = Pollen_data)
+summary(linMod)

@@ -17,7 +17,7 @@ Pollen_data <- dfNoOut %>%
   rename(
     treatment = code      #Didn't manage to make column with treatment as UV or C
                           #I tried this ---> treatment = if(Frame == "1"|Frame == "3"|Frame == "5") {"C"} else {"UV"}
-  )
+  )                       
 
 model1<-lme(Malformation_rate ~ treatment,
             random = ~1 |Tree, data = Pollen_data)
@@ -43,10 +43,16 @@ meanMalfTree <- Pollen_data %>%
   mutate(
     treatment = if(Frame == "1"|Frame == "3"|Frame == "5") {"C"} else {"UV"}
   )
-view(meanMalfTree)
 
-m1Tree<-lme(treeMeanMalf ~ Frame,random = ~1 |Tree, data = meanMalfTree)
+m1Tree<-lme(treeMeanMalf ~ treatment,random = ~1 |Tree, data = meanMalfTree)
 summary(m1Tree)
+
+residTree = resid(m1Tree)
+qqnorm(residTree)              #Checking normal distribution of residuals
+qqline(residTree)
+
+
+
 
 model1Tet<-lme(Tetrad ~ treatment,
             random = ~1 |Tree, data = Pollen_data)

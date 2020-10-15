@@ -47,3 +47,10 @@ view(meanMalfTree)
 
 m1Tree<-lme(treeMeanMalf ~ Frame,random = ~1 |Tree, data = meanMalfTree)
 summary(m1Tree)
+
+model1Tet<-lme(Tetrad ~ treatment,
+            random = ~1 |Tree, data = Pollen_data)
+summary(model1Tet)
+resT = resid(model1Tet)
+qqnorm(resT)              #Checking normal distribution of residuals
+qqline(resT)

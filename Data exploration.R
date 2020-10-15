@@ -115,5 +115,7 @@ cor.test(c_data$Num_malform, c_data$Tetrad, # Only control data
 #t-test
 t.test(c_data$Num_malform, t_data$Num_malform, alternative = "less")    #two sample t-test with all the data
 
+###
+#Linear model
 linMod <- lm(Num_malform ~ Tetrad, data = Pollen_data)
 summary(linMod)

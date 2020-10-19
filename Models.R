@@ -2,7 +2,7 @@ library(tidyverse)
 library(readxl)
 library(lme4)
 
-df <- read_excel("data/Pollen data.xlsx") 
+df <- read_excel("data/Pollen data.xlsx")
 
 
 pollenData <- df %>%
@@ -12,8 +12,8 @@ pollenData <- df %>%
     code = substring(Sample, 7, 8),
     malformationRate = (Num_malform/600)) %>%
   filter(code == "C4" | code == "T2") %>%
-  rename(
-    treatment = code)    
+  filter(tree != "PS8") %>%
+  rename(treatment = code)    
 
 ###
 #Malformation models
@@ -51,9 +51,8 @@ meanMalftree <- pollenData %>%
 view(meanMalftree)
 
 
-ggplot(meanMalftree, aes(tree, meanMalform), group = treatment)+
-  geom_col() +
-  facet_wrap(~treatment, nrow = 1)
+ggplot(meanMalftree, aes(tree, meanMalform, fill = treatment))+
+  geom_col(position = "dodge")
 
 
 meanTetrad <- pollenData %>%
@@ -66,6 +65,9 @@ meanTetNoOut <- noOutlier %>%
   summarize(meanTet = mean(Tetrad)) %>%
   mutate(meanTet = ceiling(meanTet))
 
-ggplot(meanTetrad, aes(tree, meanTet), group = treatment)+
-  geom_col() +
-  facet_wrap(~treatment, nrow = 1)  
+ggplot(meanTetNoOut, aes(tree, meanTet, fill = treatment))+ #No outliers
+  geom_col(position = "dodge")
+
+ggplot(meanTetrad, aes(tree, meanTet, fill = treatment))+ #With outliers
+  geom_col(position = "dodge")
+

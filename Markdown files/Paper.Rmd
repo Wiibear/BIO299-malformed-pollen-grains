@@ -1,7 +1,6 @@
 
 ---
 title: "BIO 299 project malformed pollen grains"
-numbersections: false
 author: "Vebjørn Kveberg Opsanger"
 date: "15 9 2020"
 output:

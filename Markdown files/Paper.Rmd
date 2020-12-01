@@ -1,0 +1,219 @@
+
+---
+title: "BIO 299 project malformed pollen grains"
+author: "Vebjørn Kveberg Opsanger"
+date: "15 9 2020"
+output:
+  bookdown::html_document2: 
+csl: harvard-cite-them-right.csl
+bibliography: PaleoChem BIO299.bib
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r figure-setup, echo=FALSE, include=FALSE}
+knitr::opts_chunk$set(fig.path="figures/",fig.align="center")
+
+library(tidyverse)
+library(readxl)
+library(lme4)
+library(effects)
+library(sjPlot)
+library(knitr)
+library(bookdown)
+library(cowplot)
+library(here)
+###
+#Managing data
+
+df <- read_excel(here("data", "Pollen data.xlsx"))
+
+pollenData <- df %>%
+  rename(
+    Malformation = Num_malform) %>%
+  mutate(
+    tree = substring(Sample, 0, 3),   # Create column for tree number
+    frame = substring(Sample, 5, 5),   # Create column for frame number
+    code = substring(Sample, 7, 8)) %>% # Create column for treatment code
+  filter(code == "C4" | code == "T2") %>% # Filter only the relevant treatments
+  filter(tree != "PS8") %>% # Removing the tree with only control samples
+  mutate(
+    treatment = if_else(code == "C4", "Control", "UV-B")) # Translating treatment code to treatment type
+
+###
+#Fitting general linear mixed effect models
+
+#Malformation model
+model1<-glmer( Malformation ~ treatment + (1| tree),
+              data = pollenData, family = poisson(link= "log"))
+
+#Tetrad model
+model1Tet<-glmer(Tetrad ~ treatment + (1|tree),        
+                 data = pollenData, family = poisson(link = "log"))
+
+#Tetrad model without presumed outlier
+noOutlier <- pollenData %>% # Removing presumed outlier
+  filter(Tetrad < 60) %>%
+  rename(Without_outlier = Tetrad)
+
+model2Tet <- glmer(Without_outlier ~ treatment + (1|tree), 
+                  data = noOutlier, family = poisson(link = "log"))
+
+```
+
+
+
+# Title
+
+## Abstract
+
+## Introduction
+The earth is protected from ultraviolet radiation by the atmospheric ozone layer(). Of the small amounts of radiation managing to pierce it's way through, ultraviolet-B(UV-B) is the most harmful, potentially causing harmful mutations through DNA-lesions(called photoproducts) that prevents the transcription of genes(). Plants are especially susceptible to this due to their sessile nature, reliance on sunlight, and living on land where UV-B radiation does not get weakened as it passes through water(). To combat the effects of UV-B radiation plants have evolved protective outer layers, UV absorbing compounds, and specific enzymes called photolyases that reverse photoproducts using blue light(). In addition, photoproducts in transcriptionally active DNA have preferential repair, which means the repair is faster than other DNA(). However, if exposed to elevated levels of UV-B these defences may not be enough to prevent harmful mutations leading to decreased survival and/ or reproductive failure(). These effects are not limited to the parts directly exposed to UV-B, however, but extend throughout the plant and by extension the microbes and insects living on and around it ().  
+
+
+A sign of UV-B stress (and other environmental stressors) in gymnosperms is the production of >3% malformed pollen grains/pollen tetrads in the total pollen(). At lower percents malformed pollen grains and pollen tetrads are considered a part of natural variations as the failures of pollen grains to develope correctly within the pollen mother cell (). Malformed pollen grains come in many different shapes and variants, but no difference has been found in variants produced by different environmental stressors and those a part of natural variance (). It is therefore not possible to identify a malformed pollen grain as being produced by UV-B if nothing else is not about it. However, UV-B is unique among environmental stressors as it can affect the entire earth simultanously if there is a failure in the ozone layer(). Based on worldwide spikes in worldwide spikes in malformed spores and pollen grains dating dating back similar time frames, researchers have been able to determine that elevated levels of UV-B likely contributed to the devonian- and end-permian mass extinctions through the global collapse of forest communities(). A recent study by Benca et al. on the dwarf pine (*Pinus mugo*) suggests that the mechanism behind the end-permian collapse was UV-B induced sterility(). The conclusion of this study based itself on the seeming functional and developmental similarities between ancient gymnosperm pollen and modern pine pollen, both in the normal pollen grains and in malformed variations (). In addition to malformed gymnosperm polle at the end-permian there was an increase in lycopod spore tetrads (No increase in gymnosperm tetrads were reported though). A similar increase in spore tetrads (and spore malformations) in a species of unknown lineage was also observed dating back to the devonian mass extinction event (). When spores/pollen grains are released as tetrads it is because of a failure of the plant to transcribe and time the excretion of enzymes at proper timings to separate the four pollen grains created by the pollen mother cell (). The mechanisms by which this happens that have been studied indicates that increased formation of pollen tetrads is mostly linked to genetic mutation in the mother plant(). Potential therefore exist for UV-B too cause this kind of reaction in gymnosperms too. 
+
+The research question for study is how the pollen grains of *Pinus sylvestris* are affected by increased UV-B radiation. Based on the results of other studies it is expected that the amount of malformed pollen grains will increase when exposed to the UV-B treatment. For pollen tetrads it is a different case, as little resarch has been done on the formation on gymnosperm tetrads, but from what is generally known about the formation spore tetrads and pollen tetrads it is also expected that the amount of pollen tetrads will also increase.
+
+## Materials and methods
+
+Six branches of *Pinus sylvestris* with pollen cones at an early developmental stage were harvested from nine different trees at the end of may and start of june. Each branch was put into their own bottles of water and were sorted into six different frames so that each tree had one branch in each frame. The frames were placed into a greenhouse which held where temperature got regulated when it exceeded 18 degrees celsius. Three of the frames were placed under fluorescent lights with UV-B irradiance between 7 and 11 (depending on placement in the frame) while the other three frames were controls placed under fluorecent lights that mimicked ambient conditions. Pollen was harvested when the pollen cones matured.
+
+To prepare a sample for microscopy pollen was put into a eppendorf vial and the eppendorf vial was then filled with destilled water. The sample was then sentrifuged so that some of the pollen sank to the bottom. In a fume hood a bit of glyseringelatin(with fenol) was placed on an object glass and melted at 85 degrees celsius. When the glyceringelatin had melted some of the pollen in the eppendorf vial was extracted with a single use pippete and one drop was dripped onto the melted glyceringelatin. The glycerinegelatin and pollen drop were then mixed before being taken off the oven and left to harden. When the mixture had hardened, a piece of it was scraped off and put onto a different object glass and four pieces of wax were placed in a square around the scraped off piece. A coverslip was then put on top of the wax and the scraped off piece. The object glass was then placed on the oven at 85 degrees celsius and left there until the wax and scraped of piece of the mixture was melted. Lastly, the object glass was removed from the oven and left out in the open until the contents under the coverslip had hardened.
+
+The prepared samples were looked at under a microscope using phase contrast 3 and 40x magnification. 600 pollen grains were counted per sample and the number of tetrads and malformations were noted. The counting was done by going from left to right in a straight line at a fixed vertical value. When the rightmost edge of the sample at that vertical value was reached, the vertical value was moved upwards two screens and the process repeated. When reaching the rightmost edge again the vertical value was moved downwards two degrees from the original vertical positional value. If the count of 600 pollen grains was not reached, the pattern of moving the microscope was repeated, going two screens further than previously up and down.
+
+A pearson correlation test was used to test the correlation between the number of tetrads and the number malformations
+
+A general linear mixed effect model(glmm) was used to test the difference between the two treatments. The glmm takes into account that observations coming from the same tree are more correlated than observations between different trees, and uses the data from all the trees to estimate the global mean and variance.
+
+## Results
+
+There was great variation between trees regarding both the number of malformations and number of tetrads, but the effect of UV-B to increase malformation rates was consequent across all trees (Fig. \@ref(fig:means-per-tree)). There was also great variation between trees in regards to tetrads, but no consequent effect of the UV-B was easily observable (fig \@ref(fig:means-per-tree)). A significant difference between the amount of tetrads was found between the control treatment and UV-treatment([Table 1](#tables)). In the case of malformed pollen UV-B was calculated to have higher amounts, but the opposite was true for tetrads(fig \@ref(fig:model-visual)). However, if a strongly deviant sample was removed(Tetrads in deviant = 65, second highest amount = 31 and all others $\leq$ 11 or below) from the data, no significant difference was detected ([Table 1](#tables)). 
+Lastly, a significant correlation was found between tetrads and malformations for the UV-B treatment data, but not for the control data, even with the deviant removed.
+
+
+```{r means-per-tree, fig.cap="a) Comparison of the mean number of malformations per tree between the control -and UV-B treatment. b) for tetrads", echo = FALSE, message = FALSE,  fig.width=7.5, fig.height=10, }
+
+#Preparing raw data for histogram
+meanMalftree <- pollenData %>%
+  group_by(tree, treatment) %>%
+  #Grouping the data by tree and treatment
+  summarize(meanMalform = mean(Malformation))%>%
+  mutate(meanMalform = ceiling(meanMalform))
+
+meanTetrad <- pollenData %>%
+  group_by(tree, treatment) %>%
+  summarize(meanTet = mean(Tetrad)) %>%
+  mutate(meanTet = ceiling(meanTet))
+
+#Creating histogram
+p1 <- ggplot(meanMalftree, aes(tree, meanMalform, fill =       treatment)) +
+  labs(title = "Mean number of malformed pollen per tree") +
+  geom_col(position = "dodge") +
+  ylab("Malformations") +
+  xlab("Tree") +
+  scale_fill_manual(values = alpha(c("lightgoldenrod2", "mediumpurple1"))) +
+  theme(plot.title = element_text((family = "sans")))
+  
+
+p2 <- ggplot(meanTetrad, aes(tree, meanTet, 
+                             fill =  treatment)) +    
+  labs(title = "Mean number of pollen tetrads per tree") +
+  geom_col(position = "dodge") +
+  ylab("Tetrads") +
+  xlab("Tree") +
+  scale_fill_manual(values = alpha(c("lightgoldenrod2", "mediumpurple1"))) +
+  theme(plot.title = element_text((family = "sans")))
+
+plot_grid(p1, p2, labels = c("a", "b"), label_size = 12, axis = "l", nrow = 2)
+```
+
+
+
+```{r model-visual, echo=FALSE, fig.cap="Global means and SE calculated by model for  a) malformations b)tetrads including deviant sample", fig.width=5, fig.height=6}
+
+#Preparing model data for histogram
+tib1 <- as_tibble(allEffects(model1))
+mMal1 <- tib1$treatment
+tib2 <- as_tibble(allEffects(model1Tet))
+mTet1 <- tib2$treatment
+
+
+#Making histogram
+p3 <- ggplot(mMal1, aes(x = treatment, fit, fill = treatment)) +
+  geom_col(position = "dodge") + 
+  geom_errorbar(aes(ymin = fit - se, ymax = fit + se), size = 0.2,  width = 0.3) +
+  ylab("Malformed pollen") +
+  xlab("Treatment") +
+  ylim(0,16) + #Making the plots have equal y-axis
+  scale_fill_manual(values = alpha(c("lightgoldenrod2", "mediumpurple1"))) +
+  theme(plot.title = element_text((family = "sans")))
+
+p4 <- ggplot(mTet1, aes(x = treatment, fit, fill = treatment)) +
+  geom_col(position = "dodge") + 
+  geom_errorbar(aes(ymin = fit - se, ymax = fit + se), size = 0.2,  width = 0.3) +
+  ylab("Malformed pollen") +
+  xlab("Treatment") +
+  ylim(0,16) + #Making the plots have equal y-axis
+  scale_fill_manual(values = alpha(c("lightgoldenrod2", "mediumpurple1"))) +
+  theme(plot.title = element_text((family = "sans")))
+
+
+plot_grid(p3, p4, labels = c("a", "b"), label_size = 12, axis = "l", nrow = 2, align = "v")
+```
+
+```{r tables, echo=FALSE}
+#Making tables of the GLMMS
+tab_model(model1, model1Tet, model2Tet, show.ci = FALSE,
+          title = "Table 1: Summary of general linear mixed effect models",
+          show.icc = FALSE, show.se = TRUE,
+          show.est = TRUE, show.r2 = FALSE,
+          transform = NULL,
+          dv.labels = c("Malformation model results", "Tetrad model with deviant sample", "Tetrad model without deviant"))
+```
+
+
+
+
+```{r, echo = FALSE, message = FALSE, include = FALSE}
+
+#Preparing data for correlation test
+c_data <- pollenData %>% #Data from control
+  filter(treatment == 'Control') 
+
+c_no_out <- c_data %>% #Data from control, but deviant removed
+  filter(Tetrad < 60)
+
+t_data <- pollenData %>% #Data from UV-B treatment        
+  filter(treatment == 'UV-B')
+
+#Correlation tests
+cor.test(t_data$Malformation, t_data$Tetrad, 
+         method = "pearson") #Only treatment data
+
+cor.test(c_data$Malformation, c_data$Tetrad, 
+           method = "pearson") #Only control data
+
+cor.test(c_no_out$Malformation, c_no_out$Tetrad, 
+         method = "pearson") #Control data without potential outllier
+
+
+```
+
+
+
+## Discussion
+
+The amount of malformed pollen grains when *P. sylvestris* was exposed to elevated levels of UV-B was increased as was hypothesized. However, the amount of pollen tetrads did not increase, which went against the hypothesis. It would therefore seem that the formation of gymnosperm pollen tetrads are not affected by UV-B, or at least the UV-B levels that *P. sylvestris* was exposed in this study. The reason for this difference might be because of their differing formation origins. Lastly, a deviant sample in the control treatment indicates that much still remains unknown about what factors influences the formation of tetrads. Some of these unknown factors could related to the study design, as physically cutting off a branch from the mother tree and transplanting it to a jar with water in a greenhouse likely subjects the branches to unnatural stress. It could also be unknown factors relating to the specific branch the sample came from.
+
+The increase in malformed pollen grains consequent with past research(). No studies regarding the effects of UV-B on the formation of gymnosperm pollen tetrads was found, however, but since other studies looking at fossil and non-fossil malformed pollen grains it is likely that the researchers did not notice any increases in their numbers. This lack of reporting could indicate that UV-B not increasing the amount of tetrads is unique. What could be unique, however, is that that significantly more tetrads were found in the control treatment. Since this result was due to a very deviant sample, and when removed it turned the result into a non-significant one, it was likely influenced by unknown factors. It would be of interest though to repeat this experiment to see if a similar deviant result would appear. Even if UV-B doesn't seem to increase the formation rates of tetrads, the siginificant correlation found between the amount of tetrads and malformations in the UV-treatment could hint that UV-B has some influence over tetrad formation if only a small amount. The results of this does, however, indicate that it pollen tetrads in gymnosperms are not a sign of UV-B stress. 
+
+The reason why malformation rates increase and tetrad rates don't when *Pinus sylvestris* is exposed to UV-B is likely related to how the creation of pollen tetrads and malformed pollen differ. Because the development of malformed pollen is only contained within the pollen mother cell, any DNA-damage that affects meiosis or the proper development of the individual pollen grain could lead to the malformation of the individual pollen grain. The increase in pollen grains by UV-B could therefore be the result of unrepaired DNA-damage within the pollen mother cell. However, when a pollen tetrad is released from the plant it is a failure of the mother plant and therefore outside of the control of the pollen mother cell. Preferential repair may be a contributor to this as the genes are actively transcribed, but this is only speculation. The exact mechanics of how tetrads are formed could be a good subject for future studies 
+
+### Conclusion
+The amount of malformed pollen increased when *Pinus sylvestris* was subjected to elevated levels of UV-B which was consequent with a past study. Pollen tetrad amounts did not increase however. This means that pollen tetrads can not be used as indicators of UV-B stress. The differing ways which malformation rates and tetrad rates respond to UV-B radiation are likely rooted in how the development failure  leading to malformed pollen is happens within the pollen mother cell and pollen tetrads who are released from the pollen cone is a failure of the mother plant to separate the pollen grains in the pollen mother cell.
+
+## References
+

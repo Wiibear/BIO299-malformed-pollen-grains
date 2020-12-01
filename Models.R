@@ -1,62 +1,73 @@
 library(tidyverse)
 library(readxl)
-library(nlme)
+library(lme4)
+
 df <- read_excel("data/Pollen data.xlsx")
 
-Pollen_data <- df %>%
-  filter(Num_malform < 90)
 
-Pollen_data <- dfNoOut %>%
+pollenData <- df %>%
   mutate(
-    Tree = substring(Sample, 0, 3),   # Create column for tree number
-    Frame = substring(Sample, 5, 5),   # Create column for frame number
+    tree = substring(Sample, 0, 3),   # Create column for tree number
+    frame = substring(Sample, 5, 5),   # Create column for frame number
     code = substring(Sample, 7, 8),
-    Malformation_rate = (Num_malform/600),
-  ) %>%
+    malformationRate = (Num_malform/600)) %>%
   filter(code == "C4" | code == "T2") %>%
-  rename(
-    treatment = code      #Didn't manage to make column with treatment as UV or C
-                          #I tried this ---> treatment = if(Frame == "1"|Frame == "3"|Frame == "5") {"C"} else {"UV"}
-  )                       
-
-model1<-lme(Malformation_rate ~ treatment,
-            random = ~1 |Tree, data = Pollen_data)
-summary(model1)
-
-residuals = resid(model1)
-qqnorm(residuals)              #Checking normal distribution of residuals
-qqline(residuals)
+  filter(tree != "PS8") %>%
+  rename(treatment = code)    
 
 ###
-#Experimentation
-meanMalfFrame <- Pollen_data %>%
-  group_by(Frame, treatment) %>%
-  summarize(meanMalform = mean(Num_malform))%>%
-  mutate(
-    treatment = if(Frame == "1"|Frame == "3"|Frame == "5") {"C"} else {"UV"}
-  )
-view(meanMalfFrame)
+#Malformation models
 
-meanMalfTree <- Pollen_data %>%
-  group_by(Tree, Frame, code) %>%
-  summarize(treeMeanMalf = mean(Num_malform)) %>%
-  mutate(
-    treatment = if(Frame == "1"|Frame == "3"|Frame == "5") {"C"} else {"UV"}
-  )
+model1<-glmer(cbind(Num_malform, 600- Num_malform) ~ treatment + (1 | tree),
+             data = pollenData, family = binomial(link= "logit"))
+summary(model1)
 
-m1Tree<-lme(treeMeanMalf ~ treatment,random = ~1 |Tree, data = meanMalfTree)
-summary(m1Tree)
-
-residTree = resid(m1Tree)
-qqnorm(residTree)              #Checking normal distribution of residuals
-qqline(residTree)
+model2<-glmer( Num_malform ~ treatment + (1| tree),
+              data = pollenData, family = poisson(link= "log"))
+summary(model2)
 
 
+### 
+#Tetrad model
 
-
-model1Tet<-lme(Tetrad ~ treatment,
-            random = ~1 |Tree, data = Pollen_data)
+model1Tet<-glmer(Tetrad ~ treatment + (1|tree),        #with outliers
+                 data = pollenData, family = poisson(link = "log"))
 summary(model1Tet)
-resT = resid(model1Tet)
-qqnorm(resT)              #Checking normal distribution of residuals
-qqline(resT)
+
+noOutlier <- pollenData %>%
+  filter(Tetrad < 60) %>%
+  filter(Tetrad != 31)
+
+model2Tet<-glmer(Tetrad ~ treatment + (1|tree),        #without outliers
+                 data = noOutlier, family = poisson(link = "log"))
+summary(model2Tet)
+
+###
+#Histograms
+meanMalftree <- pollenData %>%
+  group_by(tree, treatment) %>%
+  summarize(meanMalform = mean(Num_malform))%>%
+  mutate(meanMalform = ceiling(meanMalform))
+view(meanMalftree)
+
+
+ggplot(meanMalftree, aes(tree, meanMalform, fill = treatment))+
+  geom_col(position = "dodge")
+
+
+meanTetrad <- pollenData %>%
+  group_by(tree, treatment) %>%
+  summarize(meanTet = mean(Tetrad)) %>%
+  mutate(meanTet = ceiling(meanTet))
+
+meanTetNoOut <- noOutlier %>%
+  group_by(tree, treatment) %>%
+  summarize(meanTet = mean(Tetrad)) %>%
+  mutate(meanTet = ceiling(meanTet))
+
+ggplot(meanTetNoOut, aes(tree, meanTet, fill = treatment))+ #No outliers
+  geom_col(position = "dodge")
+
+ggplot(meanTetrad, aes(tree, meanTet, fill = treatment))+ #With outliers
+  geom_col(position = "dodge")
+

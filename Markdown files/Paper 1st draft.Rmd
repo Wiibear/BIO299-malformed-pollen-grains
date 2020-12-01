@@ -5,6 +5,7 @@ author: "Vebjørn Kveberg Opsanger"
 date: "15 9 2020"
 output:
   bookdown::html_document2: 
+    number_sections: false
 csl: harvard-cite-them-right.csl
 bibliography: PaleoChem BIO299.bib
 ---

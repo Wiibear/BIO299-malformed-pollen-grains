@@ -1,10 +1,12 @@
 
 ---
 title: "BIO 299 project malformed pollen grains"
+numbersections: false
 author: "Vebjørn Kveberg Opsanger"
 date: "15 9 2020"
 output:
   bookdown::html_document2: 
+    number_sections: false
 csl: harvard-cite-them-right.csl
 bibliography: PaleoChem BIO299.bib
 ---
@@ -67,6 +69,7 @@ model2Tet <- glmer(Without_outlier ~ treatment + (1|tree),
 # Title
 
 ## Abstract
+UV-B radiation causes DNA-damage, and living organisms have therefore developed repair mechanisms to combat them. However, elevated levels of UV-B has the potential to cause more damage than the organism can repair, often resulting in harmful mutations. Such elevated levels of UV-B have been suggested to be a contributor to two mass extinctions. These suggestions are based on worldwide elevated levels of malformed gymnosperm pollen grains and pollen tetrads in a non-gymnosperm lineage. Malformed pollen by a development failure within the pollen mother cell, while pollen tetrads are caused by the mother plant failing to separate the four pollen grains created by the pollen mother cell. Pine pollen resembles ancient gymnosperms, which makes pine a relevant study object in this context. The hypothesis was that both the amounts of malformed pollen and pollen tetrads would increase as response to elevated levels of UV-B. The results showed that this was only the case for malformed pollen, which is consequent with past studies, but no increase in pollen tetrads was found. These differing response could be a consequence of the differences in the origins of the two abnormalities, but without further study the exact mechanics of this are. Lastly, a strongly deviating sample in regards to tetrads suggests that much is still unknown about what factors influences increased rates of pollen tetrads.
 
 ## Introduction
 The earth is protected from ultraviolet radiation by the atmospheric ozone layer(). Of the small amounts of radiation managing to pierce it's way through, ultraviolet-B(UV-B) is the most harmful, potentially causing harmful mutations through DNA-lesions(called photoproducts) that prevents the transcription of genes(). Plants are especially susceptible to this due to their sessile nature, reliance on sunlight, and living on land where UV-B radiation does not get weakened as it passes through water(). To combat the effects of UV-B radiation plants have evolved protective outer layers, UV absorbing compounds, and specific enzymes called photolyases that reverse photoproducts using blue light(). In addition, photoproducts in transcriptionally active DNA have preferential repair, which means the repair is faster than other DNA(). However, if exposed to elevated levels of UV-B these defences may not be enough to prevent harmful mutations leading to decreased survival and/ or reproductive failure(). These effects are not limited to the parts directly exposed to UV-B, however, but extend throughout the plant and by extension the microbes and insects living on and around it ().  
